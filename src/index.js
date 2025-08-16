@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/users", userRouter)
+app.use("/auth", userRouter)
 
 app.get("/ping", (req, res) => {
     res.json({"message": "Welcome to the User Management API", "status": "success"});
