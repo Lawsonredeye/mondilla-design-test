@@ -57,7 +57,7 @@ model Application {
   @@unique([freelancerId, projectId])
 }
 
-// Enums Definintion
+// Enums Definition
 enum Status {
   DRAFT
   OPEN
