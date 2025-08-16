@@ -2,7 +2,7 @@ import { VerifyJwtToken } from "../pkg/validator/jwt_validator.js";
 
 function protectedAuth(req, res, next) {
     if (req.headers.authorization) {
-        let reqToken = ""
+        let reqToken;
         if (req.headers.authorization.startsWith("Bearer ")) {
             reqToken = req.headers.authorization.split(" ")[1];
         } else {
