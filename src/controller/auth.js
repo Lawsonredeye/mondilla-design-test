@@ -12,9 +12,6 @@ function protectedAuth(req, res, next) {
         if (!token) {
             return res.status(401).send({ message: "invalid access token", status: "error" });
         }
-        if (token.exp * 1000 < Date.now()) {
-            return res.status(401).send({ message: "access token expired", status: "error" });
-        }
         req.clientId = token.user_id;
         req.userName = token.user_name;
         req.role = token.role;
