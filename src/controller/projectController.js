@@ -20,7 +20,6 @@ projectRouter.post("/", async (req, res) => {
 
     const project = await prisma.project.create({
         data: {
-            name,
             title,
             description,
             status,
@@ -30,7 +29,7 @@ projectRouter.post("/", async (req, res) => {
         }
     });
 
-    res.json({"message": "Project created successfully", "status": "success", project});
+    res.status(201).json({"message": "Project created successfully", "status": "success", project});
 });
 
 projectRouter.get("/", async (req, res) => {
