@@ -36,4 +36,43 @@ describe('DELETE /projects/:id', () => {
             status: "error"
         });
     })
+
+    it('should return an error for unauthorized access when deleting a non-existent project', async () => {
+        const projectId = '9999';
+
+        const res = await request(app).delete(`/projects/${projectId}`).set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc");
+
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toEqual({
+            message: "Project not found",
+            status: "error"
+        });
+    })
+
+    it('should return an error for unauthorized access when deleting a project with invalid ID', async () => {
+        const projectId = 'invalid-id';
+
+        const res = await request(app).delete(`/projects/${projectId}`).set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1Mzc0NzM4LCJleHAiOjE3NTU0MTA3Mzh9.tTaN5GBZBq8vGIjxSpjfR3e2rkdAIC5qxE0dGj0wtzk",
+        );
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toEqual({
+            message: "Invalid project ID",
+            status: "error"
+        });
+    })
+
+    it('should delete project successfully', async () => {
+        const projectId = '2';
+
+        const res = await request(app).delete(`/projects/${projectId}`)
+            .set('authorization',  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc",
+            );
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual({
+            message: "Project deleted successfully",
+            status: "success"
+        });
+    })
 })
