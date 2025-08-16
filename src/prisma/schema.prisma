@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(FREELANCER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  Application Application[]
+  Project     Project[]
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  clientId    Int
+  title       String
+  description String
+  budgetMin   Decimal
+  budgetMax   Decimal
+  status      Status   @default(DRAFT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  Application Application[]
+  user        User          @relation(fields: [clientId], references: [id])
+}
+
+model Application {
+  id           Int      @id @default(autoincrement())
+  projectId    Int
+  freelancerId Int
+  coverLetter  String
+  bidAmount    Decimal
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+
+  freelancer User    @relation(fields: [freelancerId], references: [id])
+  project    Project @relation(fields: [projectId], references: [id])
+
+  @@unique([freelancerId, projectId])
+}
+
+// Enums Definintion
+enum Status {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum Role {
+  FREELANCER
+  CLIENT
+  ADMIN
+}
