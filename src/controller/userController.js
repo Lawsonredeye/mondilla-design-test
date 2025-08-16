@@ -10,7 +10,8 @@ const userRouter = express.Router()
 const prisma = new PrismaClient()
 
 userRouter.post("/register", async (req, res) => {
-    const {name, email, password} = req.body;
+    let {name, email, password, role} = req.body;
+    if (!role) role = "FREELANCER";
     const valid = validateUserInput({name, email, password});
     if (valid !== null) {
         return res.status(400).send({"message": valid, "status": "error"});
@@ -24,6 +25,7 @@ userRouter.post("/register", async (req, res) => {
             data: {
                 name,
                 email,
+                role,
                 passwordHash,
             }
         })
@@ -31,13 +33,15 @@ userRouter.post("/register", async (req, res) => {
         console.log("Error creating user:", error);
         return res.status(409).send({"message": "user with email already exists", "status": "error"});
     }
+
     res.json({"message": "user created successfully.", "status": "success"});
 })
 
 userRouter.post("/login", async (req, res) => {
+    if (!req.body) return res.status(400).send({"message": "email and password is required", status: "error"});
     const {email, password} = req.body;
     if (!email || !password) {
-        return res.status(400).send({"message": "email and password is required"});
+        return res.status(400).send({"message": "email and password is required", status: "error"});
     }
     const result = await prisma.user.findFirst({
         where: {
@@ -45,13 +49,14 @@ userRouter.post("/login", async (req, res) => {
         }
     })
     if (!result) {
-        return res.status(400).send({"message": "invalid email or password"});
+        return res.status(400).send({"message": "invalid email or password", status: "error"});
     }
     if (ValidatePassword(password, result.passwordHash) === false) {
-        return res.status(400).send({"message": "invalid email or password"});
+        return res.status(400).send({"message": "invalid email or password", status: "error"});
     }
 
     const token = CreateJwtToken(result.id, result.name, result.role)
+    if (token === null ) return res.status(500).send({"message": "something happened, please try again", status: "error"})
     return res.status(200).send({"message": "User logged in", "access_token": token, "status": "success"});
 })
 

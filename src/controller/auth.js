@@ -17,6 +17,7 @@ function protectedAuth(req, res, next) {
         req.role = token.role;
         next();
     } else {
+        console.log(req.headers);
         return res.status(401).send({ message: "Unauthorized access", status: "error" });
     }
 }

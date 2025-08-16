@@ -20,8 +20,8 @@ describe('POST /projects', () =>  {
             message: "Unauthorized access",
             status: "error"
         });
-
     })
+
 })
 
 describe('DELETE /projects/:id', () => {
