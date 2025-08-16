@@ -1,0 +1,28 @@
+{
+  "name": "mondilla-design-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "jest": "^30.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "supertest": "^7.1.4"
+  },
+  "devDependencies": {
+    "prisma": "^6.14.0"
+  },
+  "jest": {
+    "transform": {}
+  }
+}
