@@ -32,14 +32,14 @@ describe('POST /projects', () =>  {
         };
 
         const res = await request(app).post('/projects')
-            .headers({
-                authorization: "test"
-            })
+            .set(
+                "authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzA1MDcsImV4cCI6MTc1NTM3NzcwN30.2lCjzk7btXulJW4k8DW7z6KpcQrfYOY_-Q_pm6J0zpk", // this would expire in 2 hours so, don't worry about this.
+            )
             .send(newProject);
 
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('message', 'Project created successfully');
         expect(res.body).toHaveProperty('status', 'success');
-        expect(res.body.project).toHaveProperty('id'); // Assuming the project has an id
+        expect(res.body.project).toHaveProperty('id');
     });
 })
