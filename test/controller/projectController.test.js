@@ -76,3 +76,24 @@ describe('DELETE /projects/:id', () => {
         });
     })
 })
+
+describe('GET /projects', () => {
+    it('should return an error for unauthorized access when retrieving projects', async () => {
+        const res = await request(app).get('/projects');
+
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toEqual({
+            message: "Unauthorized access",
+            status: "error"
+        });
+    })
+
+    it('should retrieve projects successfully', async () => {
+        const res = await request(app).get('/projects')
+            .set('authorization', '');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('projects');
+        expect(res.body.status).toEqual("success");
+        expect(res.body.message).toEqual("Projects retrieved successfully");
+    })
+})
