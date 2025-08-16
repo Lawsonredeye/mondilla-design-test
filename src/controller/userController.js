@@ -35,7 +35,7 @@ userRouter.post("/login", async (req, res) => {
     if (!req.body) return res.status(400).send({"message": "email and password is required", status: "error"});
     const {email, password} = req.body;
     if (!email || !password) {
-        return res.status(400).send({"message": "email and password is required"});
+        return res.status(400).send({"message": "email and password is required", status: "error"});
     }
     const result = await prisma.user.findFirst({
         where: {
@@ -43,10 +43,10 @@ userRouter.post("/login", async (req, res) => {
         }
     })
     if (!result) {
-        return res.status(400).send({"message": "invalid email or password"});
+        return res.status(400).send({"message": "invalid email or password", status: "error"});
     }
     if (ValidatePassword(password, result.passwordHash) === false) {
-        return res.status(400).send({"message": "invalid email or password"});
+        return res.status(400).send({"message": "invalid email or password", status: "error"});
     }
 
     const token = CreateJwtToken(result.id, result.name, result.role)
