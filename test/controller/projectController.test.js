@@ -20,6 +20,27 @@ describe('POST /projects', () =>  {
             message: "Unauthorized access",
             status: "error"
         });
-
     })
+
+    it('should create a new project successfully', async () => {
+        const newProject = {
+            name: "Test Project",
+            title: "Test Project Title",
+            description: "This is a test project.",
+            status: "OPEN",
+            budgetMin: 100.00,
+            budgetMax: 300.00,
+        };
+
+        const res = await request(app).post('/projects')
+            .headers({
+                authorization: "test"
+            })
+            .send(newProject);
+
+        expect(res.statusCode).toEqual(201);
+        expect(res.body).toHaveProperty('message', 'Project created successfully');
+        expect(res.body).toHaveProperty('status', 'success');
+        expect(res.body.project).toHaveProperty('id'); // Assuming the project has an id
+    });
 })
