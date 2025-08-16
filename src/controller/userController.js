@@ -34,7 +34,7 @@ userRouter.post("/login", async (req, res) => {
     if (!email || !password) {
         return res.status(400).send({"message": "email and password is required"});
     }
-    const result = prisma.user.findFirst({
+    const result = await prisma.user.findFirst({
         where: {
             email: email
         }
