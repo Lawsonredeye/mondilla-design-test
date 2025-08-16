@@ -20,7 +20,7 @@ userRouter.post("/register", async (req, res) => {
         return res.status(400).send({"message": "can't hash password", "status": "error"});
     }
     try {
-        const resp = await prisma.user.create({
+         await prisma.user.create({
             data: {
                 name,
                 email,
