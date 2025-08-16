@@ -24,7 +24,6 @@ describe('POST /projects', () =>  {
 
     it('should create a new project successfully', async () => {
         const newProject = {
-            name: "Test Project",
             title: "Test Project Title",
             description: "This is a test project.",
             status: "OPEN",
