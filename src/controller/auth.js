@@ -12,11 +12,12 @@ function protectedAuth(req, res, next) {
         if (!token) {
             return res.status(401).send({ message: "invalid access token", status: "error" });
         }
-        req.set("clientId", token.user_id);
-        req.set("userName", token.user_name);
-        req.set("role", token.role);
+        req.clientId = token.user_id;
+        req.userName =  token.user_name;
+        req.role = token.role;
         next();
     } else {
+        console.log(req.headers);
         return res.status(401).send({ message: "Unauthorized access", status: "error" });
     }
 }
