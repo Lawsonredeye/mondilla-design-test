@@ -12,7 +12,7 @@ projectRouter.post("/", async (req, res) => {
 
     let {title, description, status, budgetMin, budgetMax} = req.body;
     if (!status) status = "DRAFT"
-    const clientId = req.body.userId;
+    const clientId = req.clientId;
 
     if (!clientId) {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
@@ -20,7 +20,6 @@ projectRouter.post("/", async (req, res) => {
 
     const project = await prisma.project.create({
         data: {
-            name,
             title,
             description,
             status,
@@ -30,7 +29,7 @@ projectRouter.post("/", async (req, res) => {
         }
     });
 
-    res.json({"message": "Project created successfully", "status": "success", project});
+    res.status(201).json({"message": "Project created successfully", "status": "success", project});
 });
 
 projectRouter.get("/", async (req, res) => {
