@@ -33,7 +33,7 @@ projectRouter.post("/", async (req, res) => {
 });
 
 projectRouter.get("/", async (req, res) => {
-    const clientId = req.user.id;
+    const clientId = req.clientId;
 
     if (!clientId) {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
@@ -48,5 +48,40 @@ projectRouter.get("/", async (req, res) => {
     res.json({"message": "Projects retrieved successfully", "status": "success", projects});
 })
 
+projectRouter.delete("/:id", async (req, res) => {
+    const clientId = req.clientId;
+    if (!clientId) {
+        return res.status(401).send({"message": "Unauthorized access", "status": "error"});
+    }
+
+    try{
+        const projectId = parseInt(req.params.id);
+        if (isNaN(projectId)) {
+            return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+        }
+        const project = await prisma.project.findFirst({
+            where: {
+                id: projectId,
+                clientId: clientId
+            }
+        });
+
+        if (!project) {
+            return res.status(404).send({"message": "Project not found", "status": "error"});
+        }
+
+        await prisma.project.delete({
+            where: {
+                id: projectId
+            }
+        });
+
+        res.json({"message": "Project deleted successfully", "status": "success"});
+    } catch (error) {
+        console.error("Error parsing project ID:", error);
+        return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+    }
+
+})
 
 export default projectRouter;
