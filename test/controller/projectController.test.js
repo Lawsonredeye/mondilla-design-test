@@ -23,3 +23,17 @@ describe('POST /projects', () =>  {
 
     })
 })
+
+describe('DELETE /projects/:id', () => {
+    it('should return an error for unauthorized access when deleting a project', async () => {
+        const projectId = '1';
+
+        const res = await request(app).delete(`/projects/${projectId}`);
+
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toEqual({
+            message: "Unauthorized access",
+            status: "error"
+        });
+    })
+})
