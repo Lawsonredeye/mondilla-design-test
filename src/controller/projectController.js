@@ -12,7 +12,7 @@ projectRouter.post("/", async (req, res) => {
 
     let {title, description, status, budgetMin, budgetMax} = req.body;
     if (!status) status = "DRAFT"
-    const clientId = req.body.userId;
+    const clientId = req.clientId;
 
     if (!clientId) {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
