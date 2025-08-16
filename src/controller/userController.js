@@ -19,13 +19,18 @@ userRouter.post("/register", async (req, res) => {
     if (!passwordHash) {
         return res.status(400).send({"message": "can't hash password", "status": "error"});
     }
-    const resp = await prisma.user.create({
-        data: {
-            name,
-            email,
-            passwordHash,
-        }
-    })
+    try {
+        const resp = await prisma.user.create({
+            data: {
+                name,
+                email,
+                passwordHash,
+            }
+        })
+    } catch (error) {
+        console.log("Error creating user:", error);
+        return res.status(409).send({"message": "user with email already exists", "status": "error"});
+    }
     res.json({"message": "user created successfully.", "status": "success"});
 })
 
