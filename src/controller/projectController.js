@@ -33,7 +33,7 @@ projectRouter.post("/", async (req, res) => {
 });
 
 projectRouter.get("/", async (req, res) => {
-    const clientId = req.user.id;
+    const clientId = req.clientId;
 
     if (!clientId) {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
@@ -46,6 +46,35 @@ projectRouter.get("/", async (req, res) => {
     });
 
     res.json({"message": "Projects retrieved successfully", "status": "success", projects});
+})
+
+projectRouter.delete("/:id", async (req, res) => {
+    const projectId = parseInt(req.params.id);
+    const clientId = req.clientId;
+
+    if (!clientId) {
+        return res.status(401).send({"message": "Unauthorized access", "status": "error"});
+    }
+
+    const project = await prisma.project.findUnique({
+        where: {
+            id: projectId,
+            clientId: clientId
+        }
+    });
+
+    if (!project) {
+        return res.status(404).send({"message": "Project not found", "status": "error"});
+    }
+
+    await prisma.project.delete({
+        where: {
+            id: projectId,
+            clientId: clientId
+        }
+    });
+
+    res.json({"message": "Project deleted successfully", "status": "success"});
 })
 
 
