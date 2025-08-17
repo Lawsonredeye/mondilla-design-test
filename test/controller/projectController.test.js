@@ -1,5 +1,9 @@
 import request from 'supertest';
 import app from '../../src/index.js'
+import 'dotenv/config.js'
+
+const CLIENT_TOKEN = process.env.CLIENT_JWT
+const FREELANCER_TOKEN = process.env.FREELANCER_JWT
 
 describe('POST /projects', () =>  {
     it('should return an error for unauthorized access when creating a project', async () => {
@@ -40,7 +44,7 @@ describe('DELETE /projects/:id', () => {
     it('should return an error for unauthorized access when deleting a non-existent project', async () => {
         const projectId = '9999';
 
-        const res = await request(app).delete(`/projects/${projectId}`).set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc");
+        const res = await request(app).delete(`/projects/${projectId}`).set('authorization', CLIENT_TOKEN);
 
         expect(res.statusCode).toEqual(404);
         expect(res.body).toEqual({
@@ -52,7 +56,7 @@ describe('DELETE /projects/:id', () => {
     it('should return an error for forbidden access when deleting a project as a non-client user', async () => {
         const projectId = '1';
         const res = await request(app).delete(`/projects/${projectId}`)
-        .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDEwMTY2LCJleHAiOjE3NTU0NDYxNjZ9.Ta1niJVIjjhNk_ErmDeL7s1otU4X6l0AaZCLDdXFgtA')
+        .set('authorization', FREELANCER_TOKEN)
         expect(res.statusCode).toEqual(403);
         expect(res.body).toEqual({
             message: "Forbidden: Only admin and clients can delete projects",
@@ -64,7 +68,7 @@ describe('DELETE /projects/:id', () => {
         const projectId = 'invalid-id';
 
         const res = await request(app).delete(`/projects/${projectId}`)
-            .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDEwMTY2LCJleHAiOjE3NTU0NDYxNjZ9.Ta1niJVIjjhNk_ErmDeL7s1otU4X6l0AaZCLDdXFgtA')
+            .set('authorization', CLIENT_TOKEN)
 
 
         expect(res.statusCode).toEqual(400);
@@ -78,8 +82,7 @@ describe('DELETE /projects/:id', () => {
     //     const projectId = '2';
     //
     //     const res = await request(app).delete(`/projects/${projectId}`)
-    //         .set('authorization',  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc",
-    //         );
+    //         .set('authorization',  CLIENT_TOKEN);
     //
     //     expect(res.statusCode).toEqual(200);
     //     expect(res.body).toEqual({
@@ -94,7 +97,7 @@ describe('GET /projects', () => {
         const projectId = 'invalid-id';
 
         const res = await request(app).get(`/projects/${projectId}`)
-            .set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc");
+            .set('authorization', CLIENT_TOKEN);
 
         expect(res.statusCode).toEqual(400);
         expect(res.body).toEqual({
@@ -117,7 +120,7 @@ describe('GET /projects', () => {
         const projectId = '5';
 
         const res = await request(app).get(`/projects/${projectId}`)
-            .set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc");
+            .set('authorization', CLIENT_TOKEN);
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual({
@@ -140,7 +143,7 @@ describe('GET /projects', () => {
 
     it('should return success for retrieving all projects', async () => {
         const res = await request(app).get('/projects')
-            .set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDEwMTY2LCJleHAiOjE3NTU0NDYxNjZ9.Ta1niJVIjjhNk_ErmDeL7s1otU4X6l0AaZCLDdXFgtA");
+            .set('authorization', CLIENT_TOKEN);
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual({
             "message": "Projects retrieved successfully",
@@ -156,10 +159,10 @@ describe('PATCH /projects/:id/:status', () => {
         const projectId = '4';
 
         const res = await request(app).patch(`/projects/${projectId}/close`)
-            .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0MTE2MjYsImV4cCI6MTc1NTQ0NzYyNn0.8cdZ_CkjjGlgSBk4qtB0DGuf25SgWWkbcsLGJBimHgQ');
+            .set('authorization', CLIENT_TOKEN);
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual({
-            message: "Project status updated closed successfully",  
+            message: "Project status updated to CLOSED",
             status: "success"
         })
     })
@@ -168,10 +171,10 @@ describe('PATCH /projects/:id/:status', () => {
         const projectId = '4';
 
         const res = await request(app).patch(`/projects/${projectId}/open`)
-            .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0MTE2MjYsImV4cCI6MTc1NTQ0NzYyNn0.8cdZ_CkjjGlgSBk4qtB0DGuf25SgWWkbcsLGJBimHgQ');
+            .set('authorization', CLIENT_TOKEN);
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual({
-            message: "Project status updated successfully",
+            message: "Project status updated to open",
             status: "success",
         })
     })
