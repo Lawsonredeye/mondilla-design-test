@@ -53,6 +53,9 @@ projectRouter.delete("/:id", async (req, res) => {
     if (!clientId) {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
     }
+    if (req.role !== "CLIENT" || req.role !== "ADMIN") {
+        return res.status(403).send({"message": "Forbidden: Only admin and clients can delete projects", "status": "error"});
+    }
 
     try{
         const projectId = parseInt(req.params.id);
