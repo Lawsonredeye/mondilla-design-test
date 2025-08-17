@@ -38,4 +38,21 @@ describe('Applications Controller', () => {
 
         expect(response.statusCode).toEqual(201);
     })
+
+    it('should return all freelancers applications', async () => {
+        const response = await request(app)
+            .get('/projects/me/applications')
+            .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDM5NzE0LCJleHAiOjE3NTU0NzU3MTR9.ccuNsrvlETd31cAoeDX_g8Rfw58EOMUbIrHUyIqSeno')
+
+        expect(response.statusCode).toEqual(200);
+    })
+
+    it('should return all client applications', async () => {
+        const projectId = 3
+        const response = await request(app)
+            .get(`/projects/${projectId}/applications`)
+            .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0NDUwNjEsImV4cCI6MTc1NTQ4MTA2MX0.7uZ-5Ztsy9iyJEgJc-ybd7dPVKGvijCJhOmtiVgHBGc')
+
+        expect(response.statusCode).toEqual(200);
+    });
 })
