@@ -5,6 +5,9 @@ import { validateProjectInput} from "../pkg/validator/userInput.js";
 const projectRouter = express.Router();
 const prisma = new PrismaClient();
 projectRouter.post("/", async (req, res) => {
+    if (req.role !== "CLIENT") {
+        return res.status(403).send({"message": "Forbidden: Only clients can create projects", "status": "error"});
+    }
     const isValid = validateProjectInput(req.body)
     if (isValid !== null) {
         return res.status(400).send({"message": isValid, "status": "error"});
@@ -33,6 +36,12 @@ projectRouter.post("/", async (req, res) => {
 });
 
 projectRouter.get("/", async (req, res) => {
+    const projects = await prisma.project.findMany()
+    res.json({"message": "Projects retrieved successfully", "status": "success", projects});
+})
+
+
+projectRouter.get("/client", async (req, res) => {
     const clientId = req.clientId;
 
     if (!clientId) {
@@ -85,6 +94,23 @@ projectRouter.delete("/:id", async (req, res) => {
         return res.status(400).send({"message": "Invalid project ID", "status": "error"});
     }
 
+})
+
+projectRouter.get("/:id", async (req, res) => {
+  const projectId = parseInt(req.params.id);
+  if (isNaN(projectId)) {
+      return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+  }
+
+  const response = await prisma.project.findUnique({
+      where: {
+          id: projectId
+      }
+    });
+    if (!response) {
+        return res.status(404).send({"message": "Project not found", "status": "error"});
+    }
+    res.json({"message": "Project retrieved successfully", "status": "success", project: response});
 })
 
 export default projectRouter;
