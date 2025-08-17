@@ -36,8 +36,38 @@ projectRouter.post("/", async (req, res) => {
 });
 
 projectRouter.get("/", async (req, res) => {
-    const projects = await prisma.project.findMany()
-    res.json({"message": "Projects retrieved successfully", "status": "success", projects});
+    const queries = req.query;
+    const where = {};
+
+    if (queries.status) {
+        where.status = queries.status.toUpperCase();
+    }
+    if (queries.title) {
+        where.title = {
+            contains: queries.title,
+            mode: 'insensitive'
+        };
+    }
+    if (queries.description) {
+        where.description = {
+            contains: queries.description,
+            mode: 'insensitive'
+        };
+    }
+    if (queries.budgetMin) {
+        where.budgetMin = { gte: parseFloat(queries.budgetMin) };
+    }
+    if (queries.budgetMax) {
+        where.budgetMax = { lte: parseFloat(queries.budgetMax) };
+    }
+    try {
+
+        const projects = await prisma.project.findMany({ where });
+        res.json({"message": "Projects retrieved successfully", "status": "success", projects});
+    } catch (e) {
+        console.error("Error retrieving projects:", e);
+        return res.status(500).send({"message": "Something went wrong please check your filter query and try again", "status": "error"});
+    }
 })
 
 
