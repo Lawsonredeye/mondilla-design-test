@@ -233,4 +233,67 @@ projectRouter.post('/:id/applications', async (req, res) => {
     }
 })
 
+projectRouter.get('/:id/applications', async (req, res) => {
+    const projectId = parseInt(req.params.id);
+    if (isNaN(projectId)) {
+        return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+    }
+    const clientId = req.clientId;
+
+    if (req.role !== "CLIENT" && req.role !== "ADMIN") {
+        return res.status(403).send({"message": "Forbidden: Only clients and admins can view applications", "status": "error"});
+    }
+    try {
+        const project = await prisma.application.findFirst({
+            where: {
+                id: projectId,
+            },
+            include: {
+                freelancer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        if (!project) {
+            return res.status(404).send({"message": "Project not found or you do not have permission to view it", "status": "error"});
+        }
+
+        res.json({"message": "Applications retrieved successfully", "status": "success", applications: project});
+    } catch (error) {
+        console.error("Error retrieving applications:", error);
+        return res.status(500).send({"message": "Something went wrong while retrieving applications", "status": "error"});
+    }
+})
+
+projectRouter.get('/me/applications', async (req, res) => {
+    if (req.role !== "FREELANCER") {
+        return res.status(403).send({"message": "Forbidden: Only freelancers can view their applications", "status": "error"});
+    }
+    const freelancerId = req.clientId;
+    if (!freelancerId) {
+        return res.status(401).send({"message": "Unauthorized access", "status": "error"});
+    }
+
+    try {
+        const applications = await prisma.application.findMany({
+            where: {
+                freelancerId: freelancerId
+            },
+            include: {
+                project: true
+            }
+        });
+
+        res.json({"message": "Applications retrieved successfully", "status": "success", applications});
+    } catch (error) {
+        console.error("Error retrieving applications:", error);
+        return res.status(500).send({"message": "Something went wrong while retrieving applications", "status": "error"});
+    }
+})
+
 export default projectRouter;
