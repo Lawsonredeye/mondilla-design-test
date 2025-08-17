@@ -113,4 +113,34 @@ projectRouter.get("/:id", async (req, res) => {
     res.json({"message": "Project retrieved successfully", "status": "success", project: response});
 })
 
+projectRouter.patch('/:id/:status', async (req, res) => {
+    const projectId = parseInt(req.params.id);
+    if (isNaN(projectId)) {
+        return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+    }
+
+    let status = req.params.status;
+    if (!["open", "close"].includes(status)) {
+        return res.status(400).send({"message": "Invalid project status", "status": "error"});
+    }
+    if (status === "close") status = "CLOSED";
+
+    const clientId = req.clientId;
+    if (!clientId) {
+        return res.status(401).send({"message": "Unauthorized access", "status": "error"});
+    }
+
+    const project = await prisma.project.update({
+        where: {
+            id: projectId,
+            clientId: clientId
+        },
+        data: {
+            status: status.toUpperCase()
+        }
+    });
+
+    res.json({"message": `Project status updated to ${status}`, "status": "success"});
+})
+
 export default projectRouter;
