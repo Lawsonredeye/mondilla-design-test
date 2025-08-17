@@ -130,7 +130,7 @@ projectRouter.patch('/:id/:status', async (req, res) => {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
     }
 
-    const project = await prisma.project.update({
+    await prisma.project.update({
         where: {
             id: projectId,
             clientId: clientId
