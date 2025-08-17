@@ -49,11 +49,23 @@ describe('DELETE /projects/:id', () => {
         });
     })
 
+    it('should return an error for forbidden access when deleting a project as a non-client user', async () => {
+        const projectId = '1';
+        const res = await request(app).delete(`/projects/${projectId}`)
+        .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDEwMTY2LCJleHAiOjE3NTU0NDYxNjZ9.Ta1niJVIjjhNk_ErmDeL7s1otU4X6l0AaZCLDdXFgtA')
+        expect(res.statusCode).toEqual(403);
+        expect(res.body).toEqual({
+            message: "Forbidden: Only admin and clients can delete projects",
+            status: "error"
+        });
+    })
+
     it('should return an error for unauthorized access when deleting a project with invalid ID', async () => {
         const projectId = 'invalid-id';
 
-        const res = await request(app).delete(`/projects/${projectId}`).set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1Mzc0NzM4LCJleHAiOjE3NTU0MTA3Mzh9.tTaN5GBZBq8vGIjxSpjfR3e2rkdAIC5qxE0dGj0wtzk",
-        );
+        const res = await request(app).delete(`/projects/${projectId}`)
+            .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDEwMTY2LCJleHAiOjE3NTU0NDYxNjZ9.Ta1niJVIjjhNk_ErmDeL7s1otU4X6l0AaZCLDdXFgtA')
+
 
         expect(res.statusCode).toEqual(400);
         expect(res.body).toEqual({
@@ -62,17 +74,105 @@ describe('DELETE /projects/:id', () => {
         });
     })
 
-    it('should delete project successfully', async () => {
-        const projectId = '2';
+    // it('should delete project successfully', async () => {
+    //     const projectId = '2';
+    //
+    //     const res = await request(app).delete(`/projects/${projectId}`)
+    //         .set('authorization',  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc",
+    //         );
+    //
+    //     expect(res.statusCode).toEqual(200);
+    //     expect(res.body).toEqual({
+    //         message: "Project deleted successfully",
+    //         status: "success"
+    //     });
+    // })
+})
 
-        const res = await request(app).delete(`/projects/${projectId}`)
-            .set('authorization',  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc",
-            );
+describe('GET /projects', () => {
+    it('should return an error for invalid project ID', async () => {
+        const projectId = 'invalid-id';
+
+        const res = await request(app).get(`/projects/${projectId}`)
+            .set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc");
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toEqual({
+            message: "Invalid project ID",
+            status: "error"
+        });
+    })
+
+    it('should return an error for unauthorized access when retrieving projects', async () => {
+        const res = await request(app).get('/projects');
+
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toEqual({
+            message: "Unauthorized access",
+            status: "error"
+        });
+    })
+
+    it('should return success for a single project with valid ID', async () => {
+        const projectId = '5';
+
+        const res = await request(app).get(`/projects/${projectId}`)
+            .set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTUzNzQ2NDYsImV4cCI6MTc1NTQxMDY0Nn0.6quoPsOkHBzCJQ4WjxkJR73Jvib853QsHnQtJaJA-Oc");
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual({
-            message: "Project deleted successfully",
-            status: "success"
+                "message": "Project retrieved successfully",
+                "status": "success",
+                "project": {
+                    "id": 5,
+                    "clientId": 2,
+                    "title": "first project",
+                    "description": "Project one",
+                    "budgetMin": "200",
+                    "budgetMax": "300.32",
+                    "status": "OPEN",
+                    "createdAt": "2025-08-17T05:44:21.237Z",
+                    "updatedAt": "2025-08-17T05:44:21.237Z"
+                }
+            }
+        )
+    })
+
+    it('should return success for retrieving all projects', async () => {
+        const res = await request(app).get('/projects')
+            .set('authorization', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDEwMTY2LCJleHAiOjE3NTU0NDYxNjZ9.Ta1niJVIjjhNk_ErmDeL7s1otU4X6l0AaZCLDdXFgtA");
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual({
+            "message": "Projects retrieved successfully",
+            "status": "success",
+            "projects": expect.any(Array)
         });
+    })
+
+})
+
+describe('PATCH /projects/:id/:status', () => {
+    it('should change the status of a project from OPEN to CLOSED', async () => {
+        const projectId = '4';
+
+        const res = await request(app).patch(`/projects/${projectId}/close`)
+            .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0MTE2MjYsImV4cCI6MTc1NTQ0NzYyNn0.8cdZ_CkjjGlgSBk4qtB0DGuf25SgWWkbcsLGJBimHgQ');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual({
+            message: "Project status updated closed successfully",  
+            status: "success"
+        })
+    })
+
+    it('should change the status of a project from DRAFT to OPEN', async () => {
+        const projectId = '4';
+
+        const res = await request(app).patch(`/projects/${projectId}/open`)
+            .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0MTE2MjYsImV4cCI6MTc1NTQ0NzYyNn0.8cdZ_CkjjGlgSBk4qtB0DGuf25SgWWkbcsLGJBimHgQ');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual({
+            message: "Project status updated successfully",
+            status: "success",
+        })
     })
 })

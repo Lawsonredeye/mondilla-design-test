@@ -5,6 +5,9 @@ import { validateProjectInput} from "../pkg/validator/userInput.js";
 const projectRouter = express.Router();
 const prisma = new PrismaClient();
 projectRouter.post("/", async (req, res) => {
+    if (req.role !== "CLIENT") {
+        return res.status(403).send({"message": "Forbidden: Only clients can create projects", "status": "error"});
+    }
     const isValid = validateProjectInput(req.body)
     if (isValid !== null) {
         return res.status(400).send({"message": isValid, "status": "error"});
@@ -33,6 +36,42 @@ projectRouter.post("/", async (req, res) => {
 });
 
 projectRouter.get("/", async (req, res) => {
+    const queries = req.query;
+    const where = {};
+
+    if (queries.status) {
+        where.status = queries.status.toUpperCase();
+    }
+    if (queries.title) {
+        where.title = {
+            contains: queries.title,
+            mode: 'insensitive'
+        };
+    }
+    if (queries.description) {
+        where.description = {
+            contains: queries.description,
+            mode: 'insensitive'
+        };
+    }
+    if (queries.budgetMin) {
+        where.budgetMin = { gte: parseFloat(queries.budgetMin) };
+    }
+    if (queries.budgetMax) {
+        where.budgetMax = { lte: parseFloat(queries.budgetMax) };
+    }
+    try {
+
+        const projects = await prisma.project.findMany({ where });
+        res.json({"message": "Projects retrieved successfully", "status": "success", projects});
+    } catch (e) {
+        console.error("Error retrieving projects:", e);
+        return res.status(500).send({"message": "Something went wrong please check your filter query and try again", "status": "error"});
+    }
+})
+
+
+projectRouter.get("/client", async (req, res) => {
     const clientId = req.clientId;
 
     if (!clientId) {
@@ -52,6 +91,9 @@ projectRouter.delete("/:id", async (req, res) => {
     const clientId = req.clientId;
     if (!clientId) {
         return res.status(401).send({"message": "Unauthorized access", "status": "error"});
+    }
+    if (req.role !== "CLIENT" || req.role !== "ADMIN") {
+        return res.status(403).send({"message": "Forbidden: Only admin and clients can delete projects", "status": "error"});
     }
 
     try{
@@ -82,6 +124,53 @@ projectRouter.delete("/:id", async (req, res) => {
         return res.status(400).send({"message": "Invalid project ID", "status": "error"});
     }
 
+})
+
+projectRouter.get("/:id", async (req, res) => {
+  const projectId = parseInt(req.params.id);
+  if (isNaN(projectId)) {
+      return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+  }
+
+  const response = await prisma.project.findUnique({
+      where: {
+          id: projectId
+      }
+    });
+    if (!response) {
+        return res.status(404).send({"message": "Project not found", "status": "error"});
+    }
+    res.json({"message": "Project retrieved successfully", "status": "success", project: response});
+})
+
+projectRouter.patch('/:id/:status', async (req, res) => {
+    const projectId = parseInt(req.params.id);
+    if (isNaN(projectId)) {
+        return res.status(400).send({"message": "Invalid project ID", "status": "error"});
+    }
+
+    let status = req.params.status;
+    if (!["open", "close"].includes(status)) {
+        return res.status(400).send({"message": "Invalid project status", "status": "error"});
+    }
+    if (status === "close") status = "CLOSED";
+
+    const clientId = req.clientId;
+    if (!clientId) {
+        return res.status(401).send({"message": "Unauthorized access", "status": "error"});
+    }
+
+    await prisma.project.update({
+        where: {
+            id: projectId,
+            clientId: clientId
+        },
+        data: {
+            status: status.toUpperCase()
+        }
+    });
+
+    res.json({"message": `Project status updated to ${status}`, "status": "success"});
 })
 
 export default projectRouter;
