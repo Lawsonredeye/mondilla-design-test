@@ -1,5 +1,9 @@
 import request from 'supertest';
 import app from '../../src/index.js'
+import 'dotenv/config.js'
+
+const CLIENT_TOKEN = process.env.CLIENT_JWT
+const FREELANCER_TOKEN = process.env.FREELANCER_JWT
 
 describe('Applications Controller', () => {
     it('should return an error for unauthorized access to apply to client project', async () => {
@@ -16,7 +20,7 @@ describe('Applications Controller', () => {
         const projectId = 3
         const response = await request(app)
             .post(`/projects/${projectId}/applications`)
-            .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0NDIyMjQsImV4cCI6MTc1NTQ3ODIyNH0.faz5x_HQ2FiNTvau1DsAw_MG9WpjyDQOdm7luTS_kz0')
+            .set('Authorization', CLIENT_TOKEN)
             .send({
                 coverLetter: 'I am a freelancer applying for this project.',
                 bidAmount: 100
@@ -27,10 +31,10 @@ describe('Applications Controller', () => {
     })
 
     it('should return success for authorized access to apply to client project', async () => {
-        const projectId = 3
+        const projectId = 6 // todo: change this to prevent error when testing
         const response = await request(app)
             .post(`/projects/${projectId}/applications`)
-            .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDM5NzE0LCJleHAiOjE3NTU0NzU3MTR9.ccuNsrvlETd31cAoeDX_g8Rfw58EOMUbIrHUyIqSeno')
+            .set('Authorization', FREELANCER_TOKEN)
             .send({
                 coverLetter: 'I am a freelancer applying for this project.',
                 bidAmount: 100
@@ -42,7 +46,7 @@ describe('Applications Controller', () => {
     it('should return all freelancers applications', async () => {
         const response = await request(app)
             .get('/projects/me/applications')
-            .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJqb2huIGRvZSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzU1NDM5NzE0LCJleHAiOjE3NTU0NzU3MTR9.ccuNsrvlETd31cAoeDX_g8Rfw58EOMUbIrHUyIqSeno')
+            .set('Authorization', FREELANCER_TOKEN)
 
         expect(response.statusCode).toEqual(200);
     })
@@ -51,7 +55,7 @@ describe('Applications Controller', () => {
         const projectId = 3
         const response = await request(app)
             .get(`/projects/${projectId}/applications`)
-            .set('Authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJqYW5lIGRvZSIsInJvbGUiOiJDTElFTlQiLCJpYXQiOjE3NTU0NDUwNjEsImV4cCI6MTc1NTQ4MTA2MX0.7uZ-5Ztsy9iyJEgJc-ybd7dPVKGvijCJhOmtiVgHBGc')
+            .set('Authorization', CLIENT_TOKEN)
 
         expect(response.statusCode).toEqual(200);
     });
