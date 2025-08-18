@@ -52,7 +52,7 @@ describe('POST /auth/login', () => {
     it('should return success for valid login', async () => {
         const response = await request(app)
             .post('/auth/login')
-            .send({"email": "johndoe@mail.com", "password": "i am admin"})
+            .send({"email": "john@mail.com", "password": "i am admin"})
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('access_token', expect.any(String));
     })
