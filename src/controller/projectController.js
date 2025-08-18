@@ -143,6 +143,11 @@ projectRouter.get("/:id", async (req, res) => {
 })
 
 projectRouter.patch('/:id/:status', async (req, res) => {
+    if (req.role !== "CLIENT" && req.role !== "ADMIN") {
+        return res.status(401)
+            .send({message: "Forbidden: only client and admin can access this route",
+                status: "error"})
+    }
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
         return res.status(400).send({"message": "Invalid project ID", "status": "error"});
