@@ -31,7 +31,7 @@ describe('Applications Controller', () => {
     })
 
     // it('should return success for authorized access to apply to client project', async () => {
-    //     const projectId = 6 // todo: change this to prevent error when testing
+    //     const projectId = 6 //
     //     const response = await request(app)
     //         .post(`/projects/${projectId}/applications`)
     //         .set('Authorization', FREELANCER_TOKEN)
