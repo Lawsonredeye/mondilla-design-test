@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "test": "jest",
-    "testing": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +21,9 @@
     "supertest": "^7.1.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "babel-jest": "^30.0.5",
     "prisma": "^6.14.0"
   },
   "jest": {
