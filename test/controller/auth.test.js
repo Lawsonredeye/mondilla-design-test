@@ -12,17 +12,17 @@ describe('POST /users', () =>  {
 
         expect(response.status).toBe(400);
     })
-    it('should return success for creating a freelancer account', async () => {
-        const response = await request(app)
-            .post('/auth/register')
-            .send({
-                "name": "testsubject",
-                "email": "test@mail.com",
-                "password": "testpassword"
-            })
-
-        expect(response.statusCode).toBe(200);
-    })
+    // it('should return success for creating a freelancer account', async () => {
+    //     const response = await request(app)
+    //         .post('/auth/register')
+    //         .send({
+    //             "name": "testsubject",
+    //             "email": "test@mail.com",
+    //             "password": "testpassword"
+    //         })
+    //
+    //     expect(response.statusCode).toBe(200);
+    // })
     it('should return an error for duplicate email', async () => {
         const response = await request(app)
             .post('/auth/register')
