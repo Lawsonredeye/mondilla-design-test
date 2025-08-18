@@ -12,18 +12,17 @@ describe('POST /users', () =>  {
 
         expect(response.status).toBe(400);
     })
-    // it('should return success for creating a freelancer account', async () => {
-    //     // todo: change this to prevent error when testing
-    //     const response = await request(app)
-    //         .post('/auth/register')
-    //         .send({
-    //             "name": "testsubject",
-    //             "email": "test@mail.com",
-    //             "password": "testpassword"
-    //         })
-    //
-    //     expect(response.statusCode).toBe(200);
-    // })
+    it('should return success for creating a freelancer account', async () => {
+        const response = await request(app)
+            .post('/auth/register')
+            .send({
+                "name": "testsubject",
+                "email": "test@mail.com",
+                "password": "testpassword"
+            })
+
+        expect(response.statusCode).toBe(200);
+    })
     it('should return an error for duplicate email', async () => {
         const response = await request(app)
             .post('/auth/register')
@@ -52,7 +51,7 @@ describe('POST /auth/login', () => {
     it('should return success for valid login', async () => {
         const response = await request(app)
             .post('/auth/login')
-            .send({"email": "john@mail.com", "password": "i am admin"})
+            .send({"email": "johndoe@mail.com", "password": "i am admin"})
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('access_token', expect.any(String));
     })
