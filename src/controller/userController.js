@@ -1,10 +1,9 @@
 import CreateJwtToken from "../pkg/validator/jwt_validator.js";
 import prisma from "../prisma/client.js";
 import { validateUserInput } from "../pkg/validator/userInput.js";
-
-
 import express from 'express';
 import {Hashpassword, ValidatePassword} from "../pkg/validator/password_validator.js";
+import rateLimitMiddleware from "./middleware/ratelimitMiddleware.js";
 
 const userRouter = express.Router()
 
@@ -36,7 +35,7 @@ userRouter.post("/register", async (req, res) => {
     res.json({"message": "user created successfully.", "status": "success"});
 })
 
-userRouter.post("/login", async (req, res) => {
+userRouter.post("/login", rateLimitMiddleware, async (req, res) => {
     if (!req.body) return res.status(400).send({"message": "email and password is required", status: "error"});
     const {email, password} = req.body;
     if (!email || !password) {
