@@ -126,20 +126,25 @@ projectRouter.delete("/:id", async (req, res) => {
 })
 
 projectRouter.get("/:id", async (req, res) => {
-  const projectId = parseInt(req.params.id);
-  if (isNaN(projectId)) {
-      return res.status(400).send({"message": "Invalid project ID", "status": "error"});
-  }
-
-  const response = await prisma.project.findUnique({
-      where: {
-          id: projectId
+  try {
+      const projectId = parseInt(req.params.id);
+      if (isNaN(projectId)) {
+          return res.status(400).send({"message": "Invalid project ID", "status": "error"});
       }
-    });
-    if (!response) {
-        return res.status(404).send({"message": "Project not found", "status": "error"});
-    }
-    res.json({"message": "Project retrieved successfully", "status": "success", project: response});
+
+      const response = await prisma.project.findUnique({
+          where: {
+              id: projectId
+          }
+        });
+        if (!response) {
+            return res.status(404).send({"message": "Project not found", "status": "error"});
+        }
+        res.json({"message": "Project retrieved successfully", "status": "success", project: response});
+      } catch (e) {
+          console.error("Error retrieving project:", e);
+          return res.status(500).send({"message": "Something went wrong while retrieving the project", "status": "error"});
+      }
 })
 
 projectRouter.patch('/:id/:status', async (req, res) => {
