@@ -1,5 +1,5 @@
 import CreateJwtToken from "../pkg/validator/jwt_validator.js";
-import { PrismaClient } from '../generated/prisma/index.js';
+import prisma from "../prisma/client.js";
 import { validateUserInput } from "../pkg/validator/userInput.js";
 
 
@@ -7,7 +7,6 @@ import express from 'express';
 import {Hashpassword, ValidatePassword} from "../pkg/validator/password_validator.js";
 
 const userRouter = express.Router()
-const prisma = new PrismaClient()
 
 userRouter.post("/register", async (req, res) => {
     let {name, email, password, role} = req.body;

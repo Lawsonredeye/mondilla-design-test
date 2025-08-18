@@ -1,9 +1,8 @@
 import express from "express";
-import { PrismaClient } from '../generated/prisma/index.js';
+import prisma from "../prisma/client.js";
 import { validateProjectInput} from "../pkg/validator/userInput.js";
 
 const projectRouter = express.Router();
-const prisma = new PrismaClient();
 projectRouter.post("/", async (req, res) => {
     if (req.role !== "CLIENT") {
         return res.status(403).send({"message": "Forbidden: Only clients can create projects", "status": "error"});
