@@ -38,7 +38,7 @@ This is a design test for Mondilla. The goal is to create a simple web applicati
     ```
 6. Start the development server:
    ```bash
-   npm run dev
+   npm run start
    ```
 **Note**: Ensure that your PostgreSQL database is running and the connection details are correctly set in the `.env` file.
    
